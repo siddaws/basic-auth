@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <button id="auth-btn" type="button">Вхід</button>
+        <button id="reg-btn" type="button">Реєстрація</button>
+    </header>
+    <aside>
+        <h3>News</h3>
+        <ul>
+            <li>lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam</li>
+            <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga sint quo ratione!</li>
+            <li>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque cum illo error, nemo temporibus dolore?
+            </li>
+        </ul>
+    </aside>
+
+    <main>
+        <dialog id="authorization">
+            <form method="dialog">
+                <label>Введіть ім'я
+                    <input name="userName" type="text" required>
+                </label>
+
+                <label>Введіть пароль
+                    <input name="password" type="password" required>
+                </label>
+
+                <div>
+                    <button value="login" type="submit">Увійти</button>
+                    <button value="cancel" type="button">Відміна</button>
+                </div>
+            </form>
+        </dialog>
+
+        <dialog id="registration">
+            <form method="dialog">
+                <label>Введіть ім'я
+                    <input name="userName" type="text" required>
+                </label>
+
+                <label>Введіть пароль
+                    <input name="password" type="password" required>
+                </label>
+
+                <label>Повторіть пароль
+                    <input name="passwordRepeat" type="password" required>
+                </label>
+
+                <div>
+                    <button value="register" type="submit">Зареєструватися</button>
+                    <button value="cancel" type="button">Відміна</button>
+                </div>
+
+            </form>
+        </dialog>
+        <h2>Привіт, <span>гість</span></h2>
+        <div hidden id="records">
+            <form>
+                <input type="hidden" name="id">
+                <label for="text">Введіть запис</label>
+                <textarea name="text" id="text" required></textarea>
+
+                <button type="submit">Додати</button>
+            </form>
+            <ul>
+
+            </ul>
+        </div>
+    </main>
+
+</body>
+
+</html>
