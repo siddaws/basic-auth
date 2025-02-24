@@ -44,14 +44,51 @@ function handleApi(request, response) {
     const { url, method } = request;
     const endpoint = method + url.replace('/api/', '');
 
+    response.setHeader('Content-Type', 'application/json');
+
     if (endpoint === 'POSTlogin') {
         handleLogin(request, response);
+    } else if (endpoint === 'POSTregister') {
+        handleRegister(request, response);
+    } else if (endpoint === 'POSTrecord') {
+        addRecords(request, response);
+    } else if (endpoint === 'GETrecords') {
+
+        response.end(JSON.stringify(records));
+    } else {
+        response.statusCode = 404;
+        response.end();
     }
+}
+
+async function addRecords(request, response) {
+    const record = await getBody(request);
+    record.id = Date.now();
+    records.push(record);
+    response.end(JSON.stringify({ success: true }));
+}
+
+async function handleRegister(request, response) {
+    const user = await getBody(request);
+    user.id = Date.now();
+    users.push(user);
+    response.end(JSON.stringify({ success: true }));
 }
 
 async function handleLogin(request, response) {
     const { userName, password } = await getBody(request);
+
+    const user = users.find(user => user.name === userName);
+    if (user && user.password === password) {
+        const u = { id: user.id, name: user.name };
+        response.end(JSON.stringify(u));
+
+    } else {
+        response.end(JSON.stringify({ success: false }));
+    }
 }
+
+
 
 async function getBody(request) {
     let body = '';

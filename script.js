@@ -10,37 +10,10 @@ const list = recordsContainer.querySelector('ul');
 const nameSpan = document.querySelector('h2>span');
 const cancelButtons = document.querySelectorAll('[value="cancel"]');
 
-const users = [
-    // {
-    //     id: 1,
-    //     name: 'bob',
-    //     password: '123'
 
-    // },
-    // {
-    //     id: 2,
-    //     name: 'patrik',
-    //     password: '456'
-    // }
-]
-const records = [
-    // {
-    //     userId: 1,
-    //     text: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit aliquam enim laborum nisi sequi sit natus quasi hic repudiandae minima corporis necessitatibus, autem non facere quia suscipit deserunt ipsum eius."
-    // },
-]
 
-loadData();
 
-function loadData() {
-    if (localStorage.getItem('users')) {
-        users.push(...JSON.parse(localStorage.getItem('users')));
-    }
-
-    if (localStorage.getItem('records')) {
-        records.push(...JSON.parse(localStorage.getItem('records')));
-    }
-}
+init();
 
 cancelButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -100,53 +73,75 @@ async function logIn(userName, password) {
         body: JSON.stringify({ userName, password })
     }
     const response = await fetch('/api/login', init)
+    const user = await response.json();
+
+    localStorage.setItem('user', JSON.stringify(user));
+
+    return user
+}
+
+function init() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+        nameSpan.textContent = user.name;
+        recordsContainer.hidden = false;
+        newRecordForm.id.value = user.id;
+        authBtn.textContent = 'Вихід';
+        showRecords(user.id);
+    }
 }
 
 function addRecord(record) {
-    records.push(record);
-    saveData();
-    showRecords(record.userId);
+    const init = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+    }
+    const response = fetch('/api/record', init);
 }
 
-function saveData() {
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('records', JSON.stringify(records));
-}
+
 
 function handleRegistration(e) {
     const user = {
-        id: users.length + 1,
         name: regForm.userName.value.trim(),
         password: regForm.password.value.trim()
     };
 
-    if (doesUserExist(user.name)) {
-        e.preventDefault();
-        alertDialog("Такий користувач вже існує");
-        return;
+    const init = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(user)
     }
 
-    if (user.name.length < 2) {
-        e.preventDefault();
-        alertDialog("Ім'я має бути не менше 2 символів");
-        return;
-    }
+    // if (doesUserExist(user.name)) {
+    //     e.preventDefault();
+    //     alertDialog("Такий користувач вже існує");
+    //     return;
+    // }
 
-    if (user.password.length < 3) {
-        e.preventDefault();
-        alertDialog("Пароль має бути не менше 3 символів");
-        return;
-    }
+    // if (user.name.length < 2) {
+    //     e.preventDefault();
+    //     alertDialog("Ім'я має бути не менше 2 символів");
+    //     return;
+    // }
 
-    if (regForm.password.value !== regForm.passwordRepeat.value) {
-        e.preventDefault();
-        alertDialog("Паролі не співпадають");
-        return;
-    }
+    // if (user.password.length < 3) {
+    //     e.preventDefault();
+    //     alertDialog("Пароль має бути не менше 3 символів");
+    //     return;
+    // }
+
+    // if (regForm.password.value !== regForm.passwordRepeat.value) {
+    //     e.preventDefault();
+    //     alertDialog("Паролі не співпадають");
+    //     return;
+    // }
+
+    const response = fetch('/api/register', init);
 
 
-    users.push(user)
-    saveData();
+
     alertDialog("Користувача додано");
 }
 
@@ -156,9 +151,9 @@ function logOut() {
     authBtn.textContent = 'Вхід';
 }
 
-function showRecords(userId) {
-    const filteredRecords = records.filter(record => record.userId === userId);
-    list.innerHTML = filteredRecords.map(record => `<li>${record.text}</li>`).join('');
+async function showRecords(userId) {
+    const records = await getRecords(userId);
+    list.innerHTML = records.map(record => `<li>${record.text}</li>`).join('');
 }
 
 function doesUserExist(userName) {
@@ -189,6 +184,14 @@ function alertDialog(msg) {
         dialog.showModal();
     })
 }
+
+async function getRecords(userId) {
+    const response = await fetch(`/api/records/${userId}`);
+    const records = await response.json();
+    return records
+}
+
+
 
 
 
